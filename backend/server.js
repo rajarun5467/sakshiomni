@@ -12,10 +12,12 @@ const sessionSecret = process.env.ADMIN_SESSION_SECRET || "";
 const sessionCookie = "sakshionmi_admin";
 const collections = ["enquiries", "applications", "propertyEnquiries", "contactMessages"];
 const allowedStatuses = ["new", "contacted", "in-progress", "closed"];
-const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:5173")
-  .split(",")
-  .map((origin) => origin.trim())
+const configuredOrigins = [process.env.FRONTEND_URL, process.env.ALLOWED_ORIGINS]
+  .filter(Boolean)
+  .flatMap((value) => value.split(","))
+  .map((origin) => origin.trim().replace(/\/$/, ""))
   .filter(Boolean);
+const allowedOrigins = configuredOrigins.length ? configuredOrigins : ["http://localhost:5173"];
 
 app.use(
   cors({
@@ -171,8 +173,9 @@ function safeEqual(left, right) {
 }
 
 function serializeCookie(name, value, maxAge) {
-  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
-  return `${name}=${encodeURIComponent(value)}; Max-Age=${maxAge}; Path=/; HttpOnly; SameSite=Lax${secure}`;
+  const secure = process.env.COOKIE_SECURE === "true" || process.env.NODE_ENV === "production";
+  const sameSite = secure ? "None" : "Lax";
+  return `${name}=${encodeURIComponent(value)}; Max-Age=${maxAge}; Path=/; HttpOnly; SameSite=${sameSite}${secure ? "; Secure" : ""}`;
 }
 
 function parseCookies(header) {
