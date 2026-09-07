@@ -107,12 +107,12 @@ export default function EnquiryCard({ compact = false }: { compact?: boolean }) 
   return (
     <div
       className={`overflow-hidden rounded-3xl border border-brand-line bg-white shadow-card ${
-        compact ? "" : "lg:grid lg:grid-cols-12"
+        compact ? "" : "xl:grid xl:grid-cols-12"
       }`}
     >
       {/* Left info panel — only on non-compact / large screens */}
       {!compact && (
-        <div className="relative hidden overflow-hidden bg-navy-gradient p-8 text-white lg:col-span-4 lg:flex lg:flex-col lg:justify-between">
+        <div className="relative hidden overflow-hidden bg-navy-gradient p-8 text-white xl:col-span-4 xl:flex xl:flex-col xl:justify-between">
           <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-brand-accent/25 blur-3xl" />
           <div className="pointer-events-none absolute -left-12 bottom-0 h-40 w-40 rounded-full bg-brand-green/20 blur-3xl" />
 
@@ -157,9 +157,9 @@ export default function EnquiryCard({ compact = false }: { compact?: boolean }) 
       )}
 
       {/* Right form panel */}
-      <div className={`p-6 sm:p-8 ${compact ? "" : "lg:col-span-8"}`}>
+      <div className={`p-6 sm:p-8 md:p-9 ${compact ? "" : "xl:col-span-8"}`}>
         {/* Mobile header (compact mode or small screens) */}
-        <div className="mb-5 flex items-center gap-3 lg:hidden">
+        <div className="mb-6 flex items-center gap-3 xl:hidden">
           <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-orange to-brand-orangeDark text-white shadow-soft">
             <Icon name="sparkles" className="h-6 w-6" />
           </span>
@@ -171,14 +171,14 @@ export default function EnquiryCard({ compact = false }: { compact?: boolean }) 
 
         {/* Desktop header (non-compact only) */}
         {!compact && (
-          <div className="mb-6 hidden lg:block">
+          <div className="mb-7 hidden xl:block">
             <h3 className="font-display text-xl font-bold text-brand-navy">Share Your Requirement</h3>
             <p className="mt-1 text-sm text-slate-500">Fill in the details below and we'll get back to you.</p>
           </div>
         )}
 
         <form onSubmit={onSubmit} noValidate>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-5 md:grid-cols-2">
             <Field label="Full Name" error={errors.name} icon="users">
               <input className="input pl-10" value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Your name" />
             </Field>
@@ -209,8 +209,8 @@ export default function EnquiryCard({ compact = false }: { compact?: boolean }) 
             <Field label="City" error={errors.city} icon="pin">
               <input className="input pl-10" value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="Your city" />
             </Field>
-            <Field label="Employment Type" error={errors.employment} icon="briefcase" className="sm:col-span-2">
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <Field label="Employment Type" error={errors.employment} icon="briefcase" className="md:col-span-2">
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                 {employmentTypes.map((t) => (
                   <button
                     key={t}
@@ -227,7 +227,7 @@ export default function EnquiryCard({ compact = false }: { compact?: boolean }) 
                 ))}
               </div>
             </Field>
-            <Field label="Message" error={errors.message} className="sm:col-span-2">
+            <Field label="Message" error={errors.message} className="md:col-span-2">
               <textarea className="input min-h-[80px] resize-y" value={form.message} onChange={(e) => update("message", e.target.value)} placeholder="Tell us a bit about your requirement (optional)" />
             </Field>
           </div>

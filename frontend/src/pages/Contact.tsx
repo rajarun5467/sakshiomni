@@ -3,7 +3,7 @@ import PageHero from "../components/PageHero";
 import Breadcrumb from "../components/Breadcrumb";
 import SectionHeader from "../components/SectionHeader";
 import Reveal from "../components/Reveal";
-import EnquiryCard from "../components/EnquiryCard";
+import ContactMessageForm from "../components/ContactMessageForm";
 import Icon from "../components/Icon";
 import { company } from "../data/site";
 
@@ -105,7 +105,7 @@ export default function Contact() {
               <h2 className="h2">Send Us a Message</h2>
               <p className="lead mt-4">Fill in your details and requirement — we'll get back to you shortly.</p>
               <div className="mt-6">
-                <EnquiryCard />
+                <ContactMessageForm />
               </div>
             </Reveal>
           </div>

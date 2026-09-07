@@ -1,6 +1,7 @@
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
+import { appendSubmission } from "./store.js";
 
 const app = express();
 const port = Number(process.env.PORT) || 4000;
@@ -11,22 +12,20 @@ const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:5173")
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Origin not allowed"));
+    },
     methods: ["GET", "POST"],
   })
 );
 app.use(express.json({ limit: "100kb" }));
 
-// Temporary in-memory store. Replace with a database before production launch.
-const enquiries = [];
-const applications = [];
-const propertyEnquiries = [];
-
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, service: "sakshionmi-backend" });
 });
 
-app.post("/api/enquiries", (req, res) => {
+app.post("/api/enquiries", async (req, res) => {
   const data = sanitize(req.body);
   const missing = requiredFields(data, ["name", "mobile", "email", "loanType", "amount", "city", "employment"]);
 
@@ -34,12 +33,11 @@ app.post("/api/enquiries", (req, res) => {
     return res.status(400).json({ ok: false, message: `Missing fields: ${missing.join(", ")}` });
   }
 
-  const enquiry = withId(data);
-  enquiries.push(enquiry);
+  const enquiry = await appendSubmission("enquiries", data);
   return res.status(201).json({ ok: true, message: "Enquiry received", id: enquiry.id });
 });
 
-app.post("/api/applications", (req, res) => {
+app.post("/api/applications", async (req, res) => {
   const data = sanitize(req.body);
   const missing = requiredFields(data, ["name", "mobile", "email", "city", "loanType", "amount", "tenure", "employment", "income", "purpose"]);
 
@@ -47,12 +45,11 @@ app.post("/api/applications", (req, res) => {
     return res.status(400).json({ ok: false, message: `Missing fields: ${missing.join(", ")}` });
   }
 
-  const application = withId(data);
-  applications.push(application);
+  const application = await appendSubmission("applications", data);
   return res.status(201).json({ ok: true, message: "Application received", id: application.id });
 });
 
-app.post("/api/property-enquiries", (req, res) => {
+app.post("/api/property-enquiries", async (req, res) => {
   const data = sanitize(req.body);
   const missing = requiredFields(data, ["name", "phone", "requirement", "propertyType", "location", "budget"]);
 
@@ -60,9 +57,20 @@ app.post("/api/property-enquiries", (req, res) => {
     return res.status(400).json({ ok: false, message: `Missing fields: ${missing.join(", ")}` });
   }
 
-  const enquiry = withId(data);
-  propertyEnquiries.push(enquiry);
+  const enquiry = await appendSubmission("propertyEnquiries", data);
   return res.status(201).json({ ok: true, message: "Property enquiry received", id: enquiry.id });
+});
+
+app.post("/api/contact-messages", async (req, res) => {
+  const data = sanitize(req.body);
+  const missing = requiredFields(data, ["name", "mobile", "email", "message"]);
+
+  if (missing.length > 0) {
+    return res.status(400).json({ ok: false, message: `Missing fields: ${missing.join(", ")}` });
+  }
+
+  const contactMessage = await appendSubmission("contactMessages", data);
+  return res.status(201).json({ ok: true, message: "Contact message received", id: contactMessage.id });
 });
 
 app.use((_req, res) => {
@@ -87,10 +95,3 @@ function requiredFields(data, fields) {
   return fields.filter((field) => !data[field]);
 }
 
-function withId(data) {
-  return {
-    ...data,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-  };
-}

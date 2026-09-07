@@ -1,7 +1,12 @@
-const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:4000").replace(/\/$/, "");
+const configuredApiUrl = (import.meta.env.VITE_API_URL || "").trim();
+const API_BASE_URL = configuredApiUrl.replace(/\/$/, "");
 
 export async function submitToApi<T>(path: string, payload: T): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  if (!API_BASE_URL && !import.meta.env.DEV) {
+    throw new Error("The enquiry service is not configured. Please try again later or call us directly.");
+  }
+
+  const response = await fetch(`${API_BASE_URL || "http://localhost:4000"}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
