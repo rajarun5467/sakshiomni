@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import FloatingActions from "./components/FloatingActions";
@@ -15,8 +15,15 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import Disclaimer from "./pages/Disclaimer";
 import NotFound from "./pages/NotFound";
+import Admin from "./pages/Admin";
 
 export default function App() {
+  const location = useLocation();
+
+  if (location.pathname.startsWith("/admin")) {
+    return <Routes><Route path="/admin" element={<Admin />} /></Routes>;
+  }
+
   return (
     <>
       <ScrollToTop />
