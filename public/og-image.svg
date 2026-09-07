@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A1F44"/>
+      <stop offset="1" stop-color="#1B3A8B"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="980" cy="120" r="180" fill="#2F6BE0" opacity="0.25"/>
+  <circle cx="180" cy="540" r="160" fill="#1FA372" opacity="0.2"/>
+  <circle cx="600" cy="600" r="120" fill="#F58220" opacity="0.18"/>
+  <g transform="translate(90,230)">
+    <rect x="0" y="0" width="80" height="80" rx="20" fill="#FFFFFF" opacity="0.1"/>
+    <path d="M52 22c-2.6-3-6.5-4.5-11-4.5-5.8 0-9.5 3-9.5 7.2 0 4 3 5.8 9.5 7 7 1.4 10.5 3.4 10.5 8.2 0 4.6-4.3 7.8-10.8 7.8-5.4 0-9.5-1.8-12-5" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="25" cy="24" r="3.5" fill="#F58220"/>
+    <circle cx="49" cy="52" r="3.5" fill="#1FA372"/>
+  </g>
+  <text x="190" y="295" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="56" font-weight="800" fill="#FFFFFF">Sakshionmi <tspan fill="#F58220">Group</tspan></text>
+  <text x="90" y="380" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="34" font-weight="600" fill="#FFFFFF" opacity="0.85">Your Trusted Partner for Fast &amp; Hassle-Free</text>
+  <text x="90" y="425" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="34" font-weight="600" fill="#FFFFFF" opacity="0.85">Financial Solutions</text>
+  <text x="90" y="500" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="22" font-weight="500" fill="#FFFFFF" opacity="0.6">Home Loan · Property Loan · Business Loan · OD/CC · Industrial Loan</text>
+</svg>
