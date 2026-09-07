@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import Icon from "./Icon";
 import { loanTypes, employmentTypes } from "../data/site";
 import { isEmail, isIndianMobile, required } from "../lib/validate";
+import { submitToApi } from "../lib/api";
 
 interface Errors {
   [k: string]: string | undefined;
@@ -29,6 +30,8 @@ export default function ApplicationForm() {
   const [form, setForm] = useState(initial);
   const [errors, setErrors] = useState<Errors>({});
   const [done, setDone] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   function update<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -66,11 +69,19 @@ export default function ApplicationForm() {
   function back() {
     setStep((s) => Math.max(s - 1, 0));
   }
-  function submit(ev: FormEvent) {
+  async function submit(ev: FormEvent) {
     ev.preventDefault();
-    if (validateStep()) {
-      // Backend-ready: POST /api/apply
+    if (!validateStep()) return;
+
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await submitToApi("/api/applications", form);
       setDone(true);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Unable to submit your application right now");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -203,8 +214,9 @@ export default function ApplicationForm() {
         </div>
       )}
 
+      {submitError && <p className="mt-6 rounded-xl bg-red-50 px-4 py-3 text-center text-xs font-medium text-red-600">{submitError}</p>}
       <div className="mt-7 flex items-center justify-between gap-3">
-        <button type="button" onClick={back} disabled={step === 0} className="btn-outline">
+        <button type="button" onClick={back} disabled={step === 0 || submitting} className="btn-outline">
           Back
         </button>
         {step < steps.length - 1 ? (
@@ -213,9 +225,9 @@ export default function ApplicationForm() {
             <Icon name="arrow" className="h-4 w-4" />
           </button>
         ) : (
-          <button type="submit" className="btn-accent">
-            Submit Application
-            <Icon name="check" className="h-4 w-4" />
+          <button type="submit" disabled={submitting} className="btn-accent">
+            {submitting ? "Submitting..." : "Submit Application"}
+            {!submitting && <Icon name="check" className="h-4 w-4" />}
           </button>
         )}
       </div>

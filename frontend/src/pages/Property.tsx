@@ -7,6 +7,7 @@ import Reveal from "../components/Reveal";
 import CTA from "../components/CTA";
 import Icon from "../components/Icon";
 import { isIndianMobile, required } from "../lib/validate";
+import { submitToApi } from "../lib/api";
 
 const offerings = [
   {
@@ -55,6 +56,8 @@ export default function Property() {
   const [form, setForm] = useState(initial);
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [done, setDone] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   function update<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -74,9 +77,20 @@ export default function Property() {
     return Object.keys(e).length === 0;
   }
 
-  function onSubmit(ev: FormEvent) {
+  async function onSubmit(ev: FormEvent) {
     ev.preventDefault();
-    if (validate()) setDone(true);
+    if (!validate()) return;
+
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await submitToApi("/api/property-enquiries", form);
+      setDone(true);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Unable to submit your property enquiry right now");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -157,7 +171,7 @@ export default function Property() {
                   <p className="mt-2 max-w-sm text-sm text-slate-600">
                     Thank you. Our team will contact you shortly to understand your property requirement.
                   </p>
-                  <button type="button" onClick={() => { setForm(initial); setDone(false); }} className="btn-outline mt-5">
+                  <button type="button" onClick={() => { setForm(initial); setDone(false); setSubmitError(""); }} className="btn-outline mt-5">
                     Submit another requirement
                   </button>
                 </div>
@@ -198,9 +212,10 @@ export default function Property() {
                       <textarea className="input min-h-[88px] resize-y" value={form.message} onChange={(e) => update("message", e.target.value)} placeholder="Any additional details (optional)" />
                     </Field>
                   </div>
-                  <button type="submit" className="btn-accent mt-5 w-full">
-                    Submit Property Requirement
-                    <Icon name="arrow" className="h-4 w-4" />
+                  {submitError && <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-center text-xs font-medium text-red-600">{submitError}</p>}
+                  <button type="submit" disabled={submitting} className="btn-accent mt-5 w-full">
+                    {submitting ? "Submitting..." : "Submit Property Requirement"}
+                    {!submitting && <Icon name="arrow" className="h-4 w-4" />}
                   </button>
                 </form>
               )}

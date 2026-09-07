@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import Icon from "./Icon";
 import { company, loanTypes, employmentTypes } from "../data/site";
 import { isEmail, isIndianMobile, required } from "../lib/validate";
+import { submitToApi } from "../lib/api";
 
 interface Errors {
   [k: string]: string | undefined;
@@ -28,6 +29,8 @@ export default function EnquiryCard({ compact = false }: { compact?: boolean }) 
   const [form, setForm] = useState(initial);
   const [errors, setErrors] = useState<Errors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   function update<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -49,11 +52,19 @@ export default function EnquiryCard({ compact = false }: { compact?: boolean }) 
     return Object.keys(e).length === 0;
   }
 
-  function onSubmit(ev: FormEvent) {
+  async function onSubmit(ev: FormEvent) {
     ev.preventDefault();
-    if (validate()) {
-      // Backend-ready: replace with API call (e.g. POST /api/enquiry)
+    if (!validate()) return;
+
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await submitToApi("/api/enquiries", form);
       setSubmitted(true);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Unable to submit your enquiry right now");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -82,6 +93,7 @@ export default function EnquiryCard({ compact = false }: { compact?: boolean }) 
             onClick={() => {
               setForm(initial);
               setSubmitted(false);
+              setSubmitError("");
             }}
             className="mt-5 text-sm font-semibold text-brand-accent hover:underline"
           >
@@ -220,9 +232,10 @@ export default function EnquiryCard({ compact = false }: { compact?: boolean }) 
             </Field>
           </div>
 
-          <button type="submit" className="btn-accent mt-6 w-full py-3.5 text-base">
-            Get Expert Assistance
-            <Icon name="arrow" className="h-4 w-4" />
+          {submitError && <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-center text-xs font-medium text-red-600">{submitError}</p>}
+          <button type="submit" disabled={submitting} className="btn-accent mt-6 w-full py-3.5 text-base">
+            {submitting ? "Submitting..." : "Get Expert Assistance"}
+            {!submitting && <Icon name="arrow" className="h-4 w-4" />}
           </button>
 
           <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-400">
