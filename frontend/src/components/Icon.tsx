@@ -135,6 +135,12 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M8 7h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01" />
     </>
   ),
+  search: (
+    <>
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </>
+  ),
 };
 
 export default function Icon({ name, className = "h-5 w-5", ...props }: IconProps) {
